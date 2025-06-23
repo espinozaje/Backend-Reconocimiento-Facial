@@ -1,3 +1,2 @@
-# nixpacks.toml
 [phases.setup]
 aptPkgs = ["libgl1", "libglib2.0-0"]
