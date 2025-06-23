@@ -13,7 +13,11 @@ os.makedirs("imagenes", exist_ok=True)
 
 # --- Inicializar FaceNet ---
 embedder = FaceNet()
-
+print("HOST:", os.getenv("MYSQLHOST"))
+print("user:", os.getenv("MYSQLUSER"))
+print("pass:", os.getenv("MYSQLPASSWORD"))
+print("db:", os.getenv("MYSQLDATABASE"))
+print("port:", os.getenv("MYSQLPORT"))
 @app.route('/imagenes/<path:filename>')
 def servir_imagen(filename):
     return send_from_directory('imagenes', filename)
