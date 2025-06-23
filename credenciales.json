@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "elite-partition-463808-d7",
+  "private_key_id": "ebfe1d5417f6400c4d77283ba3bad9f81844bc37",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC0gA58NCkOA+Fc\n438D++Ih92fYdUsjkB+kNIlN1dcxrX+Eko5nnzWagIXvuFEUvc9FZvVlRA6Fo+e3\nO1rO3X3E3Nj8ZxvXGR+Hj1J/991N3HCcGpQzlZQ1SD8fDrOap0XoVAxKue9ENndT\nUfx1zYhRT6rqUjZ4ib4LVWTZJb1yWCA58b7VAtPaPBT9gd3lzopAWFipw65fkJXb\nI2A/4m1G5UAutf+ADOMUmm/pNARr7hWjiJfrDGujvsQjZlopC7uZQ9LheSPSW7Mk\nEQXQk/wcSbUHyzdkNcsmJfkpPUuDwPa3pvRWk+9bOuw+p/8rAHQBDFQTmRGwAv8F\nKYte0bttAgMBAAECggEAT92RizdxKvhgkT9ABj0/c5QK6OYNVzEALyHn1v7Vdu+z\nyq8mP4dcqn5PxSAjEDBkM+s4jZQtcMhzUMn8hifO7HpjsFrXILfHEa5C7Mh5rWfq\nk8fW53Q53dGXzGAu7DEzZ3c48R+QVPhcmAtgz6cfuAquL3wtCey4oD8qnkJqrtq8\nucPwR/4kle6zuaLn1o7AIJeOoaMoV+hgwj4DCFc83HzU31Jgu8+k7GAEkooS6HYc\nF9hVOB+I0Zz6G5Lt4w+3io+3NhO6JzWbDYswM+O0bhGVsAYqa9k3mGYWO7x3kgQg\nM0bwMCEcJ8hHDJ4ppUWI93zyh9RVk7PI1+QXmv17qQKBgQDnVO31gFW/kg7WJ7Zg\nTMG4fbFZIaJe1vDMJFgrvo5xL59GoS2X7y4IuPs/KY0qALcxWsg18M6DIuVRkrIH\nhJ8hg7Skp0ooiLJi3v1QhdUtWhxVvJRp16Zhi5S8HgysnkT7U7zI8uXOmbYIGUPm\nM5o67DRHw2bYhDe2uwhmqtMzLwKBgQDHv301gxdLgq276PbS9B3Vhufo8E3/ybwM\nyQIj+ccO98/3FGGc6/3ncOy/H/YwMFbKvFydXpyb2MewCjli2dabBH38OekPbOfZ\npODgro7Hif6Vv+OIDaq7WzOMTgfkvad3v+B2lBmnIX7T5O86QPIGL8nRH0fE9NXa\njtcCNesEIwKBgQC8oN0UJVxGRFPCvkkRByWjSSKWmj1q9fsNisk2ikBd/MX0crLZ\nw9cWl7ePDlOkH0dBgFPm3/+UoJy6wlJWnQag7mMbK6nlmWlUA54szaRBQcv/ATFH\niOeLfKSALESLcNaw1NwIQz+uElqDCg76o7MsPrR2m9e9zzoazzGPfdWPUwKBgC6I\n6f6hf7fTxe3VJEuZG6o3N6gI8+L3eJvx6FHBSyKtkQGa+fK49/oHUOBl7dDkMhQh\nNeJjvFCCfGMCvsPMxDZxIXi1dRpm4MzPoKQ3hoPuHiV9AuEbbf8gDC5Pr38WwAEh\n7oUxk5hgMU/kMed8YeYXFAloJCw6befxBx44uXvJAoGBANiiiDe6NljQXWEXGPfh\nzcv4r8+1L5wM2k87UmrEmI6YE49umJ34ddv/0HPF7bh4GnSx6oR5saelv6qKdi2S\nNP+EF3KKH47m/IiHqVX/8VgwlzaXcScNqtbetp+PesCL9A6sFyvX0XPP5FlKPHjw\ngO1oqekcoerqJoOIsakLW0Z2\n-----END PRIVATE KEY-----\n",
+  "client_email": "espinozaje@elite-partition-463808-d7.iam.gserviceaccount.com",
+  "client_id": "106311109691907995183",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/espinozaje%40elite-partition-463808-d7.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

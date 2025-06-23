@@ -7,60 +7,79 @@ from twilio.rest import Client
 import mysql.connector
 from PIL import Image
 from keras_facenet import FaceNet
-
+from google.cloud import storage
 app = Flask(__name__)
 os.makedirs("imagenes", exist_ok=True)
 
 # --- Inicializar FaceNet ---
 embedder = FaceNet()
-print("HOST:", os.getenv("MYSQLHOST"))
-print("user:", os.getenv("MYSQLUSER"))
-print("pass:", os.getenv("MYSQLPASSWORD"))
-print("db:", os.getenv("MYSQLDATABASE"))
-print("port:", os.getenv("MYSQLPORT"))
+
+# --- Google Cloud Storage ---
+def subir_a_cloud_storage(ruta_local, destino_bucket):
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "credenciales.json"
+    client = storage.Client()
+    bucket = client.bucket("bucket-reconocimiento")
+    blob = bucket.blob(destino_bucket)
+    blob.upload_from_filename(ruta_local)
+
+    return f"https://storage.googleapis.com/{bucket.name}/{blob.name}"
+
 @app.route('/imagenes/<path:filename>')
 def servir_imagen(filename):
     return send_from_directory('imagenes', filename)
 
 # --- Twilio SMS ---
 def enviar_sms_alerta(numero_destino, mensaje):
-    account_sid = 'ACdf4f31bbd04400119b690f6c7c09f53a'
-    auth_token = '442b9e403d9cb25c710d508302aee8f8'
+    account_sid = os.getenv('TWILIO_SID')
+    auth_token = os.getenv('TWILIO_AUTH')
     client = Client(account_sid, auth_token)
     message = client.messages.create(body=mensaje, from_='+16282824764', to=numero_destino)
     print("Mensaje enviado con SID:", message.sid)
 
 # --- Conexión MySQL ---
 def conectar_bd():
-    return mysql.connector.connect(
-        host=os.getenv("MYSQLHOST"),
-        user=os.getenv("MYSQLUSER"),
-        password=os.getenv("MYSQLPASSWORD"),
-        database=os.getenv("MYSQLDATABASE"),
-        port=int(os.getenv("MYSQLPORT", 3306))  # asegúrate que sea int
-    )
+    try:
+        conn = mysql.connector.connect(
+           host='35.224.213.115',
+           user='admin',
+           password='R9R%YfKO"yQmg?9j',
+           database='reconocimiento'
+        )
+        print("✅ Conexión exitosa a la base de datos")
+        return conn
+    except mysql.connector.Error as err:
+        print(f"❌ Error al conectar a la base de datos: {err}")
+        return None
 
-# --- Crear tabla si no existe ---
 def inicializar_tabla():
     conn = conectar_bd()
-    cursor = conn.cursor()
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS usuarios (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        nombre VARCHAR(100),
-        apellido VARCHAR(100),
-        codigo VARCHAR(50) UNIQUE,
-        email VARCHAR(100),
-        requisitoriado BOOLEAN,
-        direccion VARCHAR(255),
-        imagen VARCHAR(255),
-        embedding JSON,
-        fecha DATETIME
-    )""")
-    conn.commit()
-    cursor.close()
-    conn.close()
+    if conn is None:
+        return
+    try:
+        cursor = conn.cursor()
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS usuarios (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            nombre VARCHAR(100),
+            apellido VARCHAR(100),
+            codigo VARCHAR(50) UNIQUE,
+            email VARCHAR(100),
+            requisitoriado BOOLEAN,
+            direccion VARCHAR(255),
+            imagen VARCHAR(255),
+            embedding JSON,
+            fecha DATETIME
+        )""")
+        conn.commit()
+        print("✅ Tabla 'usuarios' creada o ya existente")
+    except mysql.connector.Error as err:
+        print(f"❌ Error al crear la tabla: {err}")
+    finally:
+        cursor.close()
+        conn.close()
 
+print(f"📁 Directorio actual: {os.getcwd()}")
+print("📌 Ejecutando inicialización de tabla...")
 inicializar_tabla()
 
 # --- Función para extraer embedding ---
@@ -97,17 +116,13 @@ def registro():
     direccion = data['direccion']
     requisitoriado = data['requisitoriado']
 
-    # Carpeta y nombre del archivo
-    carpeta_usuario = os.path.join("imagenes", f"{nombre}_{apellido}")
-    os.makedirs(carpeta_usuario, exist_ok=True)
     filename = f"{codigo}_{datetime.now().timestamp()}.jpg"
-    ruta_local = os.path.join(carpeta_usuario, filename)
-
-
+    carpeta_usuario = f"{nombre}_{apellido}"
+    ruta_local = os.path.join("imagenes", carpeta_usuario, filename)
+    os.makedirs(os.path.dirname(ruta_local), exist_ok=True)
     cv2.imwrite(ruta_local, img)
 
-
-    ruta_imagen_relativa = f"imagenes/{nombre}_{apellido}/{filename}"
+    url_imagen = subir_a_cloud_storage(ruta_local, f"{carpeta_usuario}/{filename}")
 
     try:
         conn = conectar_bd()
@@ -115,7 +130,7 @@ def registro():
         cursor.execute("""
             INSERT INTO usuarios (nombre, apellido, codigo, email, requisitoriado, direccion, imagen, embedding, fecha)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """, (nombre, apellido, codigo, email, requisitoriado, direccion, ruta_imagen_relativa, json.dumps(embedding.tolist()), datetime.now()))
+        """, (nombre, apellido, codigo, email, requisitoriado, direccion, url_imagen, json.dumps(embedding.tolist()), datetime.now()))
         conn.commit()
         cursor.close()
         conn.close()
@@ -219,6 +234,30 @@ def actualizar_usuario(uid):
     data = request.json
     campos = ["nombre", "apellido", "codigo", "email", "requisitoriado", "direccion"]
     valores = [data[c] for c in campos]
+
+    actualizar_foto = 'imagen' in data
+
+    if actualizar_foto:
+        image_data = b64decode(data['imagen'].split(',')[1])
+        nparr = np.frombuffer(image_data, np.uint8)
+        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        embedding = extraer_embedding(img)
+
+        if embedding is None:
+            return jsonify({"status": "error", "mensaje": "No se detectó rostro"})
+
+        nombre, apellido, codigo = data["nombre"], data["apellido"], data["codigo"]
+        filename = f"{codigo}_{datetime.now().timestamp()}.jpg"
+        carpeta_usuario = f"{nombre}_{apellido}"
+        ruta_local = os.path.join("imagenes", carpeta_usuario, filename)
+        os.makedirs(os.path.dirname(ruta_local), exist_ok=True)
+        cv2.imwrite(ruta_local, img)
+
+        url_imagen = subir_a_cloud_storage(ruta_local, f"{carpeta_usuario}/{filename}")
+
+        campos += ["imagen", "embedding"]
+        valores += [url_imagen, json.dumps(embedding.tolist())]
+
     consulta = ", ".join([f"{c} = %s" for c in campos])
     conn = conectar_bd()
     cursor = conn.cursor()
@@ -226,7 +265,9 @@ def actualizar_usuario(uid):
     conn.commit()
     cursor.close()
     conn.close()
-    return jsonify({"status": "ok", "mensaje": "Usuario actualizado"})
+
+    return jsonify({"status": "ok", "mensaje": "Usuario actualizado con foto" if actualizar_foto else "Usuario actualizado"})
+
 
 @app.route('/usuario/<int:uid>', methods=['DELETE'])
 def eliminar_usuario(uid):

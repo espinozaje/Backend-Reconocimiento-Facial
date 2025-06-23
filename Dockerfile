@@ -18,6 +18,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Expone el puerto
 EXPOSE 5000
 
+ENV TWILIO_SID=ACdf4f31bbd04400119b690f6c7c09f53a
+ENV TWILIO_AUTH=54c63729d62b0c710c6ffec7a61a696a
+
 # Comando para ejecutar la app
-CMD ["gunicorn", "-w", "1", "--threads", "1", "--bind", "0.0.0.0:8080", "app:app"]
+CMD ["python", "app.py"]
 
