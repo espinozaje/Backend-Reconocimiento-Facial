@@ -29,7 +29,7 @@ def enviar_sms_alerta(numero_destino, mensaje):
 # --- Conexión MySQL ---
 def conectar_bd():
     return mysql.connector.connect(
-        host='mysql.railway.internal',
+        host='mysql://root:hZaEXbhTzSVoxStWvhcCpYPetBXIcTkf@yamanote.proxy.rlwy.net:57962/railway',
         user='root',
         password='hZaEXbhTzSVoxStWvhcCpYPetBXIcTkf',
         database='railway'
