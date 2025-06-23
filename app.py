@@ -29,10 +29,11 @@ def enviar_sms_alerta(numero_destino, mensaje):
 # --- Conexión MySQL ---
 def conectar_bd():
     return mysql.connector.connect(
-        host='mysql://root:hZaEXbhTzSVoxStWvhcCpYPetBXIcTkf@yamanote.proxy.rlwy.net:57962/railway',
-        user='root',
-        password='hZaEXbhTzSVoxStWvhcCpYPetBXIcTkf',
-        database='railway'
+        host=os.getenv("MYSQLHOST"),
+        user=os.getenv("MYSQLUSER"),
+        password=os.getenv("MYSQLPASSWORD"),
+        database=os.getenv("MYSQLDATABASE"),
+        port=int(os.getenv("MYSQLPORT", 3306))  # asegúrate que sea int
     )
 
 # --- Crear tabla si no existe ---
