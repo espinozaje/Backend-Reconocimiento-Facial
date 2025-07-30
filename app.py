@@ -45,10 +45,10 @@ def conectar_bd():
            password='R9R%YfKO"yQmg?9j',
            database='reconocimiento'
         )
-        print("✅ Conexión exitosa a la base de datos")
+        print("Conexión exitosa a la base de datos")
         return conn
     except mysql.connector.Error as err:
-        print(f"❌ Error al conectar a la base de datos: {err}")
+        print(f"Error al conectar a la base de datos: {err}")
         return None
 
 def inicializar_tabla():
@@ -71,15 +71,15 @@ def inicializar_tabla():
             fecha DATETIME
         )""")
         conn.commit()
-        print("✅ Tabla 'usuarios' creada o ya existente")
+        print("Tabla 'usuarios' creada o ya existente")
     except mysql.connector.Error as err:
-        print(f"❌ Error al crear la tabla: {err}")
+        print(f"Error al crear la tabla: {err}")
     finally:
         cursor.close()
         conn.close()
 
-print(f"📁 Directorio actual: {os.getcwd()}")
-print("📌 Ejecutando inicialización de tabla...")
+print(f"Directorio actual: {os.getcwd()}")
+print("Ejecutando inicialización de tabla...")
 inicializar_tabla()
 
 # --- Función para extraer embedding ---
